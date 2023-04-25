@@ -9,15 +9,16 @@ import lombok.*;
 
 @Entity
 @Data
+@Getter
 public class Records {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
-    String playerMove;
+    private String playerMove;
 
-    String computerMove;
+    private String computerMove;
 
-    String winner;
+    private String winner;
 }

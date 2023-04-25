@@ -1,18 +1,27 @@
 package com.Assessment.rockpaperscissor.Service;
 
+import com.Assessment.rockpaperscissor.Controller.GameController;
 import com.Assessment.rockpaperscissor.Entity.Records;
 import com.Assessment.rockpaperscissor.Repository.GameRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class GameService {
 
+    public Logger logger = LoggerFactory.getLogger(GameController.class);
+
     @Autowired
     GameRepository gameRepository;
+
     public String winner(String playerMove) {
+        //computer move
         String computerMove = generateComputerMove();
 
+        //To save player move, computer move and result of the game in records
         Records records = new Records();
         records.setPlayerMove(playerMove);
         records.setComputerMove(computerMove);
@@ -20,6 +29,7 @@ public class GameService {
         String message = "";
 
         String winner = "";
+        //logic for winner of the game
         if (playerMove.equalsIgnoreCase("rock") && computerMove.equals("paper")){
             winner = "Computer";
             message = winner + " wins";
@@ -50,6 +60,7 @@ public class GameService {
             records.setWinner("Player");
         }
 
+        //logic for if game results in tie
         if (playerMove.equalsIgnoreCase("rock") && computerMove.equals("rock")){
             message = "It is a tie";
             records.setWinner("Tie");
@@ -61,7 +72,15 @@ public class GameService {
             records.setWinner("Tie");
         }
 
+        if (message.length()==0)
+            records.setWinner("Invalid input");
+        //saved in db
         gameRepository.save(records);
+
+
+        //for logs
+        logs(playerMove,computerMove,message);
+
 
         if (message.length()>0){
             return message;
@@ -69,6 +88,8 @@ public class GameService {
 
             return "Incorrect Input " + playerMove;
         }
+
+
     }
 
     public String generateComputerMove(){
@@ -83,4 +104,17 @@ public class GameService {
         }
         return "";
     }
+
+    public void logs(String playerMove, String computerMove,String message){
+        if(message.length() > 0) {
+            logger.info("This is player move: " + playerMove);
+            logger.info("This is computer move: " + computerMove);
+            logger.info("Result: " + message);
+        }else {
+            logger.info("Invalid input by player");
+        }
+
+    }
+
+
 }
